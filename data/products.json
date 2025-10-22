@@ -1,0 +1,24 @@
+[
+  {
+    "id": "p1",
+    "userId": "394f4ce6-d9f0-4532-8299-a907eab952df",
+    "name": "Sample Product A",
+    "sku": "SPA-1",
+    "price": "49.99",
+    "quantity": 10,
+    "createdAt": "2025-10-22T06:46:42.250Z",
+    "updatedAt": "2025-10-22T06:46:42.250Z",
+    "deleted": false
+  },
+  {
+    "id": "p2",
+    "userId": "394f4ce6-d9f0-4532-8299-a907eab952df",
+    "name": "Sample Product B",
+    "sku": "SPB-1",
+    "price": "19.99",
+    "quantity": 3,
+    "createdAt": "2025-10-22T06:46:42.250Z",
+    "updatedAt": "2025-10-22T06:46:42.250Z",
+    "deleted": false
+  }
+]
