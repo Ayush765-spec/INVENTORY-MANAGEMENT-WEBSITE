@@ -2,61 +2,26 @@ import ProductsChart from "@/components/products-chart";
 import Sidebar from "@/components/sidebar";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { fallbackInitSample, fallbackGetProducts } from "@/lib/db-fallback";
 import { TrendingUp } from "lucide-react";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const userId = user.id;
-  let totalProducts = 0;
-  let lowStock = 0;
-  let allProducts: Array<{ price: any; quantity: any; createdAt: any }> = [];
-  let recentProducts: any[] = [];
-  let dbError = false;
-  let dbErrorMessage = "";
 
-  try {
-    const results = await Promise.all([
-      prisma.product.count({ where: { userId } }),
-      prisma.product.count({
-        where: {
-          userId,
-          lowStockAt: { not: null },
-          quantity: { lte: 5 },
-        },
-      }),
-      prisma.product.findMany({
-        where: { userId },
-        select: { price: true, quantity: true, createdAt: true },
-      }),
-    ]);
-
-    totalProducts = results[0] as number;
-    lowStock = results[1] as number;
-    allProducts = results[2] as any[];
-
-    recentProducts = await prisma.product.findMany({
+  const [totalProducts, lowStock, allProducts] = await Promise.all([
+    prisma.product.count({ where: { userId } }),
+    prisma.product.count({
+      where: {
+        userId,
+        lowStockAt: { not: null },
+        quantity: { lte: 5 },
+      },
+    }),
+    prisma.product.findMany({
       where: { userId },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    });
-    } catch (err: any) {
-    console.error("Dashboard DB error:", err);
-    dbError = true;
-    dbErrorMessage = err?.message ?? String(err);
-    // keep defaults (0 / empty arrays)
-    allProducts = [];
-    recentProducts = [];
-    // Try fallback store
-    try {
-      await fallbackInitSample(userId);
-      allProducts = await fallbackGetProducts(userId, false) as any[];
-      recentProducts = (await fallbackGetProducts(userId, false)).slice(0, 5) as any[];
-      totalProducts = allProducts.length;
-    } catch (fbErr) {
-      console.error("dashboard fallback failed:", fbErr);
-    }
-  }
+      select: { price: true, quantity: true, createdAt: true },
+    }),
+  ]);
 
   const totalValue = allProducts.reduce(
     (sum, product) => sum + Number(product.price) * Number(product.quantity),
@@ -80,8 +45,6 @@ export default async function DashboardPage() {
 
   const now = new Date();
   const weeklyProductsData = [];
-
-  // If DB had an error, weeklyProductsData will remain all zeroes (handled below)
 
   for (let i = 11; i >= 0; i--) {
     const weekStart = new Date(now);
@@ -108,7 +71,11 @@ export default async function DashboardPage() {
     });
   }
 
-  // recentProducts already populated in try/catch above
+  const recent = await prisma.product.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
 
   console.log(totalValue);
 
@@ -196,7 +163,7 @@ export default async function DashboardPage() {
               </h2>
             </div>
             <div className="space-y-3">
-              {recentProducts.map((product: any, key: number) => {
+              {recent.map((product, key) => {
                 const stockLevel =
                   product.quantity === 0
                     ? 0

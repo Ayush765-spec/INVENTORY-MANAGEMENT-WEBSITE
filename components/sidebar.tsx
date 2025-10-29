@@ -1,4 +1,4 @@
-import {BarChart3, Package, Plus, Settings} from "lucide-react";
+import {BarChart3, Package, Plus, Settings, Receipt} from "lucide-react";
 import Link from "next/link";
 import { UserButton } from "@stackframe/stack";
 
@@ -7,6 +7,7 @@ export default function Sidebar({currentPath="/dashboard"}:{currentPath:string})
         {name:"Dashboard", href:'/dashboard', icon:BarChart3},
         {name:"Inventory", href:'/inventory', icon:Package},
         {name:"Add Product", href:'/add-product', icon:Plus},
+        {name:"Billing", href:'/billing', icon:Receipt},
         {name:"Settings", href:'/settings', icon:Settings}
     ];
 
