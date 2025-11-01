@@ -1,8 +1,12 @@
+"use client";
+
 import ProductsChart from "@/components/products-chart";
 import Sidebar from "@/components/sidebar";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TrendingUp } from "lucide-react";
+import TrackerFeed from "@/components/TrackerFeed";
+import { useState } from "react";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -79,6 +83,8 @@ export default async function DashboardPage() {
 
   console.log(totalValue);
 
+  const [showTracker, setShowTracker] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar currentPath="/dashboard" />
@@ -95,6 +101,27 @@ export default async function DashboardPage() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Real-Time Tracker Toggle */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Live Delivery Tracker
+            </h2>
+            <button
+              onClick={() => setShowTracker((prev) => !prev)}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+            >
+              {showTracker ? "Hide Tracker" : "Track Delivery"}
+            </button>
+          </div>
+
+          {showTracker && (
+            <div className="border rounded-lg p-4 bg-white">
+              <TrackerFeed />
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -143,7 +170,7 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Iventory over time */}
+          {/* Inventory over time */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
               <h2>New products per week</h2>
@@ -211,50 +238,4 @@ export default async function DashboardPage() {
               <h2 className="text-lg font-semibold text-gray-900">
                 Efficiency
               </h2>
-            </div>
-            <div className="flex items-center justify-center">
-              <div className="relative w-48 h-48">
-                <div className="absolute inset-0 rounded-full border-8 border-gray-200"></div>
-                <div
-                  className="absolute inset-0 rounded-full border-8 border-purple-600"
-                  style={{
-                    clipPath:
-                      "polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%)",
-                  }}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">
-                      {inStockPercentage}%
-                    </div>
-                    <div className="text-sm text-gray-600">In Stock</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 space-y-2">
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-purple-200" />
-                  <span>In Stock ({inStockPercentage}%)</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-purple-600" />
-                  <span>Low Stock ({lowStockPercentage}%)</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-gray-200" />
-                  <span>Out of Stock ({outOfStockPercentage}%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
+           
